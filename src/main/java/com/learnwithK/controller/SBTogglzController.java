@@ -4,12 +4,13 @@ import com.learnwithK.entity.Employee;
 import com.learnwithK.services.EmployeeService;
 import com.learnwithK.utils.MyFeatures;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.togglz.core.Feature;
 import org.togglz.core.manager.FeatureManager;
 
-import java.security.PublicKey;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -37,9 +38,11 @@ public class SBTogglzController {
     }
 
     @GetMapping(value = "/v1/getEmployees")
-    public List<Employee> getAllEmployees() {
+    public List<Employee> getAllEmployees(@RequestHeader(value = "User-Agent") String header) {
         List<Employee> employees;
         try {
+
+            System.out.println(header);
             employees = empService.getEmployees();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -60,5 +63,14 @@ public class SBTogglzController {
             throw new RuntimeException(e);
         }
         return result;
+    }
+// API To get all Features and their states from DB
+    @GetMapping(value = "/v1/getFeaturesState")
+    public Map<String, Boolean> getFeatureState(){
+        Map<String, Boolean> featureMap =  new HashMap<>();
+        for (Feature feature: featureManager.getFeatures()){
+            featureMap.put(feature.name(), featureManager.getFeatureState(feature).isEnabled());
+        }
+        return featureMap;
     }
 }
