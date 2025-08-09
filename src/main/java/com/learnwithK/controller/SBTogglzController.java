@@ -38,11 +38,9 @@ public class SBTogglzController {
     }
 
     @GetMapping(value = "/v1/getEmployees")
-    public List<Employee> getAllEmployees(@RequestHeader(value = "User-Agent") String header) {
+    public List<Employee> getAllEmployees() {
         List<Employee> employees;
         try {
-
-            System.out.println(header);
             employees = empService.getEmployees();
         } catch (Exception e) {
             throw new RuntimeException(e);
